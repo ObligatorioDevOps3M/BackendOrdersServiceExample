@@ -30,7 +30,7 @@ jobs:
     - name: Build and Test with Maven
       run: mvn -B package --file pom.xml
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag shipping-service-example:$(date +%s)
+      run: docker build . --file Dockerfile --tag orders-service-example:$(date +%s)
     # Not needed for this project
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     #- name: Update dependency graph
