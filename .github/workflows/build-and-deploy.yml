@@ -53,10 +53,13 @@ jobs:
     #    docker push $REPOSITORY_URI:$IMAGE_TAG
 
     - name: Build and push Docker image
+    # env:
+    #    ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+    #    IMAGE_TAG: ${{ github.sha }}
       run: |
         IMAGE_TAG=latest
         REPOSITORY_URI=198937174082.dkr.ecr.us-east-1.amazonaws.com/orders 
-        docker build . --file Dockerfile --tag orders-service-example:$(date +%s)
+        docker build . --file Dockerfile --tag orders:latest
         docker push 198937174082.dkr.ecr.us-east-1.amazonaws.com/orders:latest
   
 
