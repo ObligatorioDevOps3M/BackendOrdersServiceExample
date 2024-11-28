@@ -59,7 +59,7 @@ jobs:
       run: |
         IMAGE_TAG=latest
         REPOSITORY_URI=198937174082.dkr.ecr.us-east-1.amazonaws.com/orders 
-        docker build . --file Dockerfile --tag orders:latest
+        docker build . --file Dockerfile --tag 198937174082.dkr.ecr.us-east-1.amazonaws.com/orders:latest
         docker push 198937174082.dkr.ecr.us-east-1.amazonaws.com/orders:latest
   
 
