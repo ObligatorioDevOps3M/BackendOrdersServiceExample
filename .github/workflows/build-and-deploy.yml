@@ -46,9 +46,9 @@ jobs:
     - name: Build and push Docker image
       run: |
         IMAGE_TAG=latest
-        REPOSITORY_URI=your-ecr-repo-uri
+        REPOSITORY_URI=198937174082.dkr.ecr.us-east-1.amazonaws.com/orders 
         docker build . --file Dockerfile --tag orders-service-example:$(date +%s)
-        docker push $REPOSITORY_URI:$IMAGE_TAG
+        docker push 198937174082.dkr.ecr.us-east-1.amazonaws.com/orders:latest
   
   # Credenciales de AWS
     - name: Configure AWS Credentials
@@ -56,21 +56,22 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: us-east-1 # Cambia a tu región
   
   # Deploy de IaC con Terraform
-    - name: Deploy Infrastructure with Terraform
-      run: |
-        terraform init
-        terraform apply -auto-approve
-      working-directory: infra/terraform # Cambia al directorio donde están tus archivos de Terraform
+  #  - name: Deploy Infrastructure with Terraform
+  #   run: |
+  #    terraform init
+  #   terraform apply -auto-approve
+  #   working-directory: infra/terraform # Cambia al directorio donde están tus archivos de Terraform
    
   # Deploy de la aplicacion en AWS EKS
-    - name: Deploy Application to EKS
-      run: |
-        aws eks --region us-east-1 update-kubeconfig --name <cluster-name>
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
+  #  - name: Deploy Application to EKS
+  #    run: |
+  #      aws eks --region us-east-1 update-kubeconfig --name <cluster-name>
+  #      kubectl apply -f k8s/deployment.yaml
+  #      kubectl apply -f k8s/service.yaml
 
     ##- name: Build the Docker image
     ##  run: docker build . --file Dockerfile --tag orders-service-example:$(date +%s)
