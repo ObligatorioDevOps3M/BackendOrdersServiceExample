@@ -59,8 +59,8 @@ jobs:
     - name: Deploy Application to EKS
       run: |
         aws eks --region us-east-1 update-kubeconfig --name cluster_obligatorio
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
+        kubectl apply -f ./k8s/deployment.yaml
+        kubectl apply -f ./k8s/service.yaml
 
     ##- name: Build the Docker image
     ##  run: docker build . --file Dockerfile --tag orders-service-example:$(date +%s)
