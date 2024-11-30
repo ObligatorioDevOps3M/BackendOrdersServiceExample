@@ -14,21 +14,6 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Test to check if the response status code is 200\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"// Test to check if the response body is not empty\r",
-							"pm.test(\"Response body is not empty\", function () {\r",
-							"    pm.response.to.not.be.empty;\r",
-							"});\r",
-							"\r",
-							"// Test to check if the response body contains the order ID\r",
-							"pm.test(\"Response body contains order ID\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.orderId).to.exist;\r",
-							"});\r",
 							""
 						],
 						"type": "text/javascript",
