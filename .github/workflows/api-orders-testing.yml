@@ -1,4 +1,4 @@
-name: api products testing
+name: api orders testing
 on:
     push:
         branches: [ "main" , "staging" , "develop", "feature/*"]
@@ -45,10 +45,18 @@ jobs:
             echo "Waiting for services to start..."
             sleep 30
 
+        - name: Check if Products Service is up
+          run: |
+            echo "Checking if Products Service is up..."
+            until curl -s http://localhost:8080/products; do
+              echo "Waiting for Products Service..."
+              sleep 5
+            done
+
         - name: Check if Orders Service is up
           run: |
             echo "Checking if Orders Service is up..."
-            until curl -s -X POST -H "Content-Type: application/json" -d '["123", "321", "111"]' http://localhost:8081/orders; do
+            until curl -s http://localhost:8081/orders; do
               echo "Waiting for Orders Service..."
               sleep 5
             done
