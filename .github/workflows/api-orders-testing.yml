@@ -1,0 +1,56 @@
+name: api orders testing
+on:
+  push:
+    branches: [ "main" , "staging" , "develop", "feature/*"]
+  pull_request:
+    branches: [ "main" , "staging" , "develop" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: orders-service
+    
+    - uses: actions/checkout@v4
+      with:
+        repository: ObligatorioDevOps3M/BackendProductsServiceExample
+        path: products-service
+    
+    - name: Set up JDK Corretto 8
+      uses: actions/setup-java@v4
+      with:
+        java-version: '8'
+        distribution: 'corretto'
+        cache: maven
+    
+    - name: Build Products Service
+      run: |
+        cd products-service
+        mvn -B package --file pom.xml
+    
+    - name: Build Orders Service
+      run: |
+        cd orders-service
+        mvn -B package --file pom.xml
+    
+    - name: Start services with Docker Compose
+      run: |
+        cd orders-service
+        docker-compose up -d
+    
+    - name: Wait for services to start
+      run: sleep 30
+    
+    - name: Install Newman
+      run: npm install -g newman
+    
+    - name: Run API Tests
+      run: |
+        cd orders-service
+        newman run ./src/test/API_Orders.postman_collection.json
+    
+    - name: Stop services
+      run: |
+        cd orders-service
+        docker-compose down

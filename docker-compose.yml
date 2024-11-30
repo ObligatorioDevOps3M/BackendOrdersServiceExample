@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  products-service:
+    image: products-service-example:latest
+    ports:
+      - "8080:8080"
+
+  orders-service:
+    image: orders-service-example:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - PRODUCTS_SERVICE_URL=http://products-service:8080
+    depends_on:
+      - products-service
