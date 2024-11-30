@@ -1,55 +1,45 @@
-name: api orders testing
+name: api products testing
 on:
-  push:
-    branches: [ "main" , "staging" , "develop", "feature/*"]
-  pull_request:
-    branches: [ "main" , "staging" , "develop" ]
+    push:
+        branches: [ "main" , "staging" , "develop", "feature/*"]
+    pull_request:
+        branches: [ "main" , "staging" , "develop" ]
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        path: orders-service
-    
-    - uses: actions/checkout@v4
-      with:
-        repository: ObligatorioDevOps3M/BackendProductsServiceExample
-        path: products-service
-    
-    - name: Set up JDK Corretto 8
-      uses: actions/setup-java@v4
-      with:
-        java-version: '8'
-        distribution: 'corretto'
-        cache: maven
-    
-    - name: Build Products Service
-      run: |
-        cd products-service
-        mvn -B package --file pom.xml
-    
-    - name: Build Orders Service
-      run: |
-        cd orders-service
-        mvn -B package --file pom.xml
-    
-    - name: Start services with Docker Compose
-      run: |
-        docker-compose up -d
-    
-    - name: Wait for services to start
-      run: sleep 30
-    
-    - name: Install Newman
-      run: npm install -g newman
-    
-    - name: Run API Tests
-      run: |
-        cd orders-service
-        newman run ./src/test/API_Orders.postman_collection.json
-    
-    - name: Stop services
-      run: |
-        cd orders-service
-        docker-compose down
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up JDK Corretto 8
+          uses: actions/setup-java@v4
+          with:
+            java-version: '8'
+            distribution: 'corretto'
+            cache: maven
+
+        - name: Build and Test with Maven
+          run: mvn -B package --file pom.xml
+
+        - name: Install Docker Compose
+          run: |
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+            docker-compose --version
+
+        - name: Build Docker images
+          run: docker-compose build
+
+        - name: Start services with Docker Compose
+          run: docker-compose up -d
+
+        - name: Wait for services to start
+          run: sleep 30
+
+        - name: Install Newman
+          run: npm install -g newman
+
+        - name: Run Newman tests
+          run: newman run ./src/test/API_Products.postman_collection.json
+
+        - name: Stop services
+          run: docker-compose down
