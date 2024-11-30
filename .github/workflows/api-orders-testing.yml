@@ -10,6 +10,9 @@ jobs:
         steps:
         - uses: actions/checkout@v4
 
+        - name: Clone BackendProductsServiceExample
+          run: git clone https://github.com/ObligatorioDevOps3M/BackendProductsServiceExample.git products-service
+
         - name: Set up JDK Corretto 8
           uses: actions/setup-java@v4
           with:
@@ -17,7 +20,12 @@ jobs:
             distribution: 'corretto'
             cache: maven
 
-        - name: Build and Test with Maven
+        - name: Build Products Service
+          run: |
+            cd products-service
+            mvn -B package --file pom.xml
+
+        - name: Build Orders Service
           run: mvn -B package --file pom.xml
 
         - name: Install Docker Compose
