@@ -11,7 +11,7 @@ jobs:
         - uses: actions/checkout@v4
 
         - name: Clone BackendProductsServiceExample
-          run: git clone https://github.com/your-org/BackendProductsServiceExample.git products-service
+          run: git clone https://github.com/ObligatorioDevOps3M/BackendProductsServiceExample.git products-service
 
         - name: Set up JDK Corretto 8
           uses: actions/setup-java@v4
