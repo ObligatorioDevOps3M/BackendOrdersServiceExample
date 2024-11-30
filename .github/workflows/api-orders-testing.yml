@@ -36,7 +36,6 @@ jobs:
     
     - name: Start services with Docker Compose
       run: |
-        cd orders-service
         docker-compose up -d
     
     - name: Wait for services to start
