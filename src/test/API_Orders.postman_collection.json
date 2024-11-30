@@ -1,0 +1,71 @@
+{
+	"info": {
+		"_postman_id": "0d2375d5-d191-464f-9a44-f26506fa4e59",
+		"name": "API_Orders",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8226521",
+		"_collection_link": "https://proyecto-final-ort-orue-rivero.postman.co/workspace/ObligatorioDevOps3M~6795b0df-c2ae-4e20-b455-acd598172048/collection/8226521-0d2375d5-d191-464f-9a44-f26506fa4e59?action=share&source=collection_link&creator=8226521"
+	},
+	"item": [
+		{
+			"name": "Realizar una compra",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test to check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Test to check if the response body is not empty\r",
+							"pm.test(\"Response body is not empty\", function () {\r",
+							"    pm.response.to.not.be.empty;\r",
+							"});\r",
+							"\r",
+							"// Test to check if the response body contains the order ID\r",
+							"pm.test(\"Response body contains order ID\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.orderId).to.exist;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    \"123\", \"321\", \"111\"\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_GATEWAY_IP}}/orders",
+					"host": [
+						"{{API_GATEWAY_IP}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "API_GATEWAY_IP",
+			"value": "localhost:8081",
+			"type": "default"
+		}
+	]
+}

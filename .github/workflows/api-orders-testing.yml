@@ -47,7 +47,7 @@ jobs:
           run: npm install -g newman
 
         - name: Run Newman tests
-          run: newman run ./src/test/API_Products.postman_collection.json
+          run: newman run ./src/test/API_Orders.postman_collection.json
 
         - name: Stop services
           run: docker-compose down
