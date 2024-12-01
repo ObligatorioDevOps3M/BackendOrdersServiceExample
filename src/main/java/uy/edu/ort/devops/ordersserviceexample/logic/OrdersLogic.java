@@ -59,20 +59,20 @@ public class OrdersLogic {
                 hasError = true;
                 errorBuilder.append("Missing: ").append(productId).append(".");
             }
+
         }
 
         String orderId = java.util.UUID.randomUUID().toString();
         if (!hasError) {
             logger.info("Products ok.");
             PaymentStatus paymentStatus = pay(orderId);
-            if (paymentStatus != null && paymentStatus.isSuccess()) {
+            if (paymentStatus.isSuccess()) {
                 logger.info("Payment ok.");
                 addShipping(orderId);
                 return new OrderStatus(orderId, true, "Ok.");
             } else {
-                String paymentError = paymentStatus != null ? paymentStatus.getDescription() : "Payment service error.";
-                logger.info("Error in payment: " + paymentError);
-                return new OrderStatus(orderId, false, paymentError);
+                logger.info("Error in payment: " + paymentStatus.getDescription());
+                return new OrderStatus(orderId, false, paymentStatus.getDescription());
             }
         } else {
             String productErrors = errorBuilder.toString();
@@ -83,30 +83,24 @@ public class OrdersLogic {
 
     private Product getProduct(String id) {
         try {
-            logger.info("Invoking products service for product ID: " + id);
+            logger.info("Invoking products service.");
             return restTemplate.getForObject(PRODUCTS_SERVICE_URL + "/products/" + id, Product.class);
-        } catch (HttpClientErrorException ex) {
-            logger.error("Error invoking products service for product ID: " + id, ex);
+        } catch (HttpClientErrorException ex)   {
             return null;
         }
     }
 
     private PaymentStatus pay(String orderId) {
         try {
-            logger.info("Invoking payments service for order ID: " + orderId);
-            return restTemplate.postForObject(PAYMENTS_SERVICE_URL + "/payments", new PaymentRequest(orderId), PaymentStatus.class);
-        } catch (HttpClientErrorException ex) {
-            logger.error("Error invoking payments service for order ID: " + orderId, ex);
+            logger.info("Invoking payments service.");
+            return restTemplate.postForObject(PAYMENTS_SERVICE_URL + "/payments/" + orderId, null, PaymentStatus.class);
+        } catch (HttpClientErrorException ex)   {
             return null;
         }
     }
 
     private void addShipping(String orderId) {
-        logger.info("Invoking shipping service for order ID: " + orderId);
-        try {
-            restTemplate.postForObject(SHIPPING_SERVICE_URL + "/shipping", new ShippingRequest(orderId), Void.class);
-        } catch (HttpClientErrorException ex) {
-            logger.error("Error invoking shipping service for order ID: " + orderId, ex);
-        }
+        logger.info("Invoking shipping service.");
+        restTemplate.postForEntity(SHIPPING_SERVICE_URL + "/shipping/" + orderId, null, String.class);
     }
 }
