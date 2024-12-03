@@ -11,9 +11,9 @@ name: CI/CD Workflow
 on:
   ##Revisar que dispara build y deploy en push aveces
   push:
-    branches: [ "main" , "staging" , "develop" ]
+    branches: [ "main" , "staging" , "develop" , "feature/*"]
   pull_request:
-    branches: [ "main" , "staging" , "develop" ]
+    branches: [ "main" , "staging" , "develop" , "feature/*"]
 
 jobs:
   build:
@@ -33,6 +33,14 @@ jobs:
     - name: Build and Test with Maven
       run: mvn -B package --file pom.xml
 
+  # Repo DevOps    
+    - name: Checkout external repository
+      uses: actions/checkout@v3
+      with:
+        repository: ObligatorioDevOps3M/DevOps
+        token: ${{ secrets.GITHUB_TOKEN }} # token del workflow
+        path: devops-repo-directory # directorio auxiliar para recibir el repo externo
+
   # Credenciales de AWS
     #Parametrizar:
         ## -AWS Region en secrets de GitHub?
@@ -45,29 +53,36 @@ jobs:
         aws-region: us-east-1 # Cambia a tu región
   
   #Build y push de la imagen de Docker a AWS ECR
-  ##Parametrizar:
-      ## --REPOSITORY_URI
-      ## --IMAGE_TAG
     - name: Log in to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Build and push Docker image
-    # env:
-    #    ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-    #    IMAGE_TAG: ${{ github.sha }}
+      env:
+         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+         IMAGE_TAG: ${{ github.sha }}
       run: |
-        IMAGE_TAG=latest
-        REPOSITORY_URI=198937174082.dkr.ecr.us-east-1.amazonaws.com/orders 
-        docker build . --file Dockerfile --tag 198937174082.dkr.ecr.us-east-1.amazonaws.com/orders:latest
-        docker push 198937174082.dkr.ecr.us-east-1.amazonaws.com/orders:latest
+        BRANCH_NAME=${GITHUB_REF##*/}
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            CUSTOM_ENV_VAR="main"
+            echo "ENVIROMENT_NAME=production" >> $GITHUB_ENV
+          elif [[ "$BRANCH_NAME" == staging ]]; then
+            CUSTOM_ENV_VAR="staging"
+            echo "ENVIROMENT_NAME=staging" >> $GITHUB_ENV
+          else
+            CUSTOM_ENV_VAR="develop"
+            echo "ENVIROMENT_NAME=develop" >> $GITHUB_ENV
+          fi
+        VALUE=$(cat devops-repo-directory/terraform/options-${CUSTOM_ENV_VAR}/ecr_repository_uri.txt)
+        REPOSITORY_URI=$VALUE/orders 
+        docker build . --file Dockerfile --tag $VALUE/orders:$IMAGE_TAG
+        docker push $VALUE/orders:$IMAGE_TAG
    
   # Deploy de la aplicacion en AWS EKS
   ## Parametrizar:
-      ## --name cluster
       ## --archivos deployment.yaml y service.yaml en DevOps?
     - name: Deploy Application to EKS
       run: |
-        aws eks --region us-east-1 update-kubeconfig --name cluster_obligatorio
+        aws eks --region us-east-1 update-kubeconfig --name cluster_obligatorio_${{env.ENVIROMENT_NAME}}
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
 
