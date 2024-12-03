@@ -45,7 +45,13 @@ jobs:
           mvn clean package -f ./BackendProductsServiceExample/pom.xml
           mvn clean package -f ./BackendPaymentsServiceExample/pom.xml
           mvn clean package -f ./BackendShippingServiceExample/pom.xml
-
+      
+      - name: Copy JARs to build context
+        run: |
+            cp ./BackendOrdersServiceExample/target/orders-service-example-0.0.1-SNAPSHOT.jar ./BackendOrdersServiceExample
+            cp ./BackendProductsServiceExample/target/products-service-example-0.0.1-SNAPSHOT.jar ./BackendProductsServiceExample
+            cp ./BackendShippingServiceExample/target/shipping-service-example-0.0.1-SNAPSHOT.jar ./BackendShippingServiceExample
+            cp ./BackendPaymentsServiceExample/target/payments-service-example-0.0.1-SNAPSHOT.jar ./BackendPaymentsServiceExample
 
       - name: Build Docker images
         run: |
