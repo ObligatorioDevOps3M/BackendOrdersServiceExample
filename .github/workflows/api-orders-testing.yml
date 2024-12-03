@@ -55,10 +55,11 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -t orders-service:latest . -f ./BackendOrdersServiceExample/Dockerfile
-          docker build -t products-service:latest . -f ./BackendProductsServiceExample/Dockerfile
-          docker build -t payments-service:latest . -f ./BackendPaymentsServiceExample/Dockerfile
-          docker build -t shipping-service:latest . -f ./BackendShippingServiceExample/Dockerfile
+          docker build -t orders-service:latest ./BackendOrdersServiceExample -f ./BackendOrdersServiceExample/Dockerfile
+          docker build -t products-service:latest ./BackendProductsServiceExample -f ./BackendProductsServiceExample/Dockerfile
+          docker build -t shipping-service:latest ./BackendShippingServiceExample -f ./BackendShippingServiceExample/Dockerfile
+          docker build -t payments-service:latest ./BackendPaymentsServiceExample -f ./BackendPaymentsServiceExample/Dockerfile
+          
       - name: List Docker images
         run: echo "$(docker images)" 
       # - name: Create Docker network
