@@ -78,7 +78,7 @@ jobs:
         docker build . --file Dockerfile --tag $VALUE:$IMAGE_TAG
         docker push $VALUE:$IMAGE_TAG
 
-        sed "s|REPOSITORY_URI|$REPOSITORY_URI|g; s|TAG_PLACEHOLDER|$IMAGE_TAG|g" k8s/deployment.yaml.template > deployment.yaml
+        sed "s|REPOSITORY_URI|$REPOSITORY_URI|g; s|TAG_PLACEHOLDER|$IMAGE_TAG|g" k8s/deployment.yaml
    
   # Deploy de la aplicacion en AWS EKS
   ## Parametrizar:
