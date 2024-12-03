@@ -59,7 +59,7 @@ jobs:
     - name: Build and push Docker image
       env:
          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-         IMAGE_TAG: ${{ github.sha }}
+         IMAGE_TAG: orders-${{ github.sha }}
       run: |
         BRANCH_NAME=${GITHUB_REF##*/}
           if [[ "$BRANCH_NAME" == "main" ]]; then
@@ -74,7 +74,7 @@ jobs:
           fi
         VALUE=$(cat devops-repo-directory/terraform/options-${CUSTOM_ENV_VAR}/ecr_repository_uri.txt)
         REPOSITORY_URI=$VALUE 
-        docker build . --file Dockerfile --tag $VALUE:orders-$IMAGE_TAG
+        docker build . --file Dockerfile --tag $VALUE:$IMAGE_TAG
         docker push $VALUE:$IMAGE_TAG
    
   # Deploy de la aplicacion en AWS EKS
