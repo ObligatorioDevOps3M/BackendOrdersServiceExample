@@ -21,6 +21,17 @@ public class OrdersLogic {
     private static String SHIPPING_SERVICE_URL;
     private static String PRODUCTS_SERVICE_URL;
 
+    // @Autowired
+    // public OrdersLogic() {
+    //     PRODUCTS_SERVICE_URL = System.getenv("PRODUCTS_SERVICE_URL");
+    //     if (PRODUCTS_SERVICE_URL == null) {
+    //         PRODUCTS_SERVICE_URL = "http://localhost:8080"; // Valor por defecto si la variable no está definida
+    //         logger.warn("PRODUCTS_SERVICE_URL not set. Using default value: " + PRODUCTS_SERVICE_URL);
+    //     }
+    //     PAYMENTS_SERVICE_URL = System.getenv().getOrDefault("PAYMENTS_SERVICE_URL","http://payments-service:8083");
+    //     SHIPPING_SERVICE_URL = System.getenv().getOrDefault("SHIPPING_SERVICE_URL","http://shipping-service:8084");
+    // }   
+
     @Autowired
     private RestTemplate restTemplate;
 
