@@ -62,39 +62,47 @@ jobs:
           
       - name: List Docker images
         run: echo "$(docker images)" 
-      # - name: Create Docker network
-      #   run: docker network create mi-red
+      - name: Create Docker network
+        run: docker network create mi-red
 
-      # - name: Run Docker containers
-      #   run: |
-      #     docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
-      #     docker run --name payments-service --network mi-red -d -p 8083:8083 payments-service:latest
-      #     docker run --name shipping-service --network mi-red -d -p 8084:8084 shipping-service:latest
-      #     docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service:latest
+      - name: Run Docker containers
+        run: |
+          docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
+          docker run --name payments-service --network mi-red -d -p 8083:8083 payments-service:latest
+          docker run --name shipping-service --network mi-red -d -p 8084:8084 shipping-service:latest
+          docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service:latest
 
-      # - name: Wait for services to start
-      #   run: sleep 30
-
+      - name: Wait for services to start
+        run: sleep 30
+      
       # - name: Run integration tests with Newman
-      #   uses: docker://dannydainton/newman:latest
+      #   uses: actions/setup-node@v2
       #   with:
-      #     collection: <ruta_a_tu_collection_de_postman>
-      #     environment: |
-      #       {
-      #           "name": "Integration Tests",
-      #           "values": [
-      #               { "key": "orders_url", "value": "http://localhost:8081/orders", "enabled": true},
-      #               { "key": "products_url", "value": "http://localhost:8080/products", "enabled": true},
-      #               { "key": "payments_url", "value": "http://localhost:8083/payments", "enabled": true},
-      #               { "key": "shipping_url", "value": "http://localhost:8084/shipping", "enabled": true}
-      #           ]
-      #       }
-      #     reporters: cli
-
-
-      # - name: Stop and remove containers
-      #   if: always()
+      #     node-version: '20'
+      # - run: npm install -g newman
+      # - name: Setup API and run tests
       #   run: |
-      #     docker stop orders-service products-service payments-service shipping-service
-      #     docker rm orders-service products-service payments-service shipping-service
-      #     docker network rm mi-red
+
+      - name: Run integration tests with Newman
+        uses: docker://dannydainton/newman:latest
+        with:
+          collection: <ruta_a_tu_collection_de_postman>
+          environment: |
+            {
+                "name": "Integration Tests",
+                "values": [
+                    { "key": "orders_url", "value": "http://localhost:8081/orders", "enabled": true},
+                    { "key": "products_url", "value": "http://localhost:8080/products", "enabled": true},
+                    { "key": "payments_url", "value": "http://localhost:8083/payments", "enabled": true},
+                    { "key": "shipping_url", "value": "http://localhost:8084/shipping", "enabled": true}
+                ]
+            }
+          reporters: cli
+
+
+      - name: Stop and remove containers
+        if: always()
+        run: |
+          docker stop orders-service products-service payments-service shipping-service
+          docker rm orders-service products-service payments-service shipping-service
+          docker network rm mi-red
