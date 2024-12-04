@@ -11,9 +11,6 @@ import uy.edu.ort.devops.ordersserviceexample.logic.OrdersLogic;
 public class OrdersServiceExampleApplication {
 
 	public static void main(String[] args) {
-		/*OrdersLogic.setPaymentsServiceUrl(System.getenv("PAYMENTS_SERVICE_URL"));
-        OrdersLogic.setShippingServiceUrl(System.getenv("SHIPPING_SERVICE_URL"));
-        //  OrdersLogic.setProductsServiceUrl(System.getenv("PRODUCTS_SERVICE_URL"));*/
 		OrdersLogic.setPaymentsServiceUrl(args[0]);
 		OrdersLogic.setShippingServiceUrl(args[1]);
 		OrdersLogic.setProductsServiceUrl(args[2]);
