@@ -74,15 +74,14 @@ jobs:
       - name: Run Docker containers
         run: |
           docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
-          docker run --name payments-service --network mi-red -d -p 8083:8083 payments-service:latest  # <--- Mapear el puerto
-          docker run --name shipping-service --network mi-red -d -p 8084:8084 shipping-service:latest  # <--- Mapear el puerto
+          docker run --name payments-service --network mi-red -d -p 8082-8085:8083 payments-service:latest
+          docker run --name shipping-service --network mi-red -d -p 8082-8085:8084 shipping-service:latest
           docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service:latest
-      
       - name: Get ports
         id: get_ports
         run: |
-          echo "ORDERS_PORT=8081" >> $GITHUB_ENV #Orders está mapeado al puerto 8081
-          echo "PRODUCTS_PORT=8080" >> $GITHUB_ENV #Products está mapeado al puerto 8080
+          echo "ORDERS_PORT=8081" >> $GITHUB_ENV
+          echo "PRODUCTS_PORT=8080" >> $GITHUB_ENV
           echo "PAYMENTS_PORT=$(docker port payments-service 8083/tcp | cut -d':' -f2)" >> $GITHUB_ENV
           echo "SHIPPING_PORT=$(docker port shipping-service 8084/tcp | cut -d':' -f2)" >> $GITHUB_ENV
      
@@ -96,15 +95,15 @@ jobs:
       
       - name: Install Newman
         run: npm install -g newman
-      
+    
       - name: Run integration tests with Newman
         run: |
           newman run ./BackendOrdersServiceExample/src/test/API_Orders.postman_collection.json \
             --reporters cli \
-            --env-var orders_url=http://localhost:8081/orders \
-            --env-var products_url=http://localhost:8080/products \
-            --env-var payments_url=http://localhost:8083/payments \  # <--- Usar localhost
-            --env-var shipping_url=http://localhost:8084/shipping   # <--- Usar localhost
+            --env-var orders_url="http://localhost:${{ env.ORDERS_PORT }}/orders" \
+            --env-var products_url="http://localhost:${{ env.PRODUCTS_PORT }}/products" \
+            --env-var payments_url="http://localhost:${{ env.PAYMENTS_PORT }}/payments" \
+            --env-var shipping_url="http://localhost:${{ env.SHIPPING_PORT }}/shipping"
       
       - name: Stop and remove containers
         if: always()
