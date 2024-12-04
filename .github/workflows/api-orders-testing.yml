@@ -65,12 +65,6 @@ jobs:
       - name: Create Docker network
         run: docker network create mi-red
       
-      # - name: Wait for services to start
-      #   run: sleep 30
-      
-      - name: Check running containers
-        run: docker ps -a
-      
       - name: Run Docker containers
         run: |
           docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
@@ -86,7 +80,10 @@ jobs:
           echo "SHIPPING_PORT=$(docker port shipping-service 8084/tcp | cut -d':' -f2)" >> $GITHUB_ENV
      
       - name: Wait for services to start
-        run: sleep 15
+        run: sleep 10
+      
+      - name: Check running containers
+        run: docker ps -a
       
       - name: Set up Node.js
         uses: actions/setup-node@v3
