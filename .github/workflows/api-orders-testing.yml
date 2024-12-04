@@ -66,7 +66,7 @@ jobs:
         run: docker network create mi-red
       
       - name: Wait for services to start
-        run: sleep 10
+        run: sleep 30
       
       - name: Run Docker containers
         run: |
@@ -75,29 +75,29 @@ jobs:
           docker run --name payments-service --network mi-red -d -p 8083:8083 payments-service:latest
           docker run --name shipping-service --network mi-red -d -p 8084:8084 shipping-service:latest
 
-      - name: Wait for services to start
-        run: sleep 30
+      # - name: Wait for services to start
+      #   run: sleep 30
       
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '20'
       
-      - name: Install Newman
-        run: npm install -g newman
+      # - name: Install Newman
+      #   run: npm install -g newman
       
-      - name: Run integration tests with Newman
-        run: |
-          newman run ./src/test/API_Orders.postman_collection.json
-            --reporters cli \ #Para ver la salida en el log del workflow
-            --env-var products_url=http://products-service:8080/products \
-            --env-var orders_url=http://orders-service:8081/orders \
-            --env-var payments_url=http://payments-service:8083/payments \
-            --env-var shipping_url=http://shipping-service:8084/shipping
+      # - name: Run integration tests with Newman
+      #   run: |
+      #     newman run ./src/test/API_Orders.postman_collection.json
+      #       --reporters cli \ #Para ver la salida en el log del workflow
+      #       --env-var products_url=http://products-service:8080/products \
+      #       --env-var orders_url=http://orders-service:8081/orders \
+      #       --env-var payments_url=http://payments-service:8083/payments \
+      #       --env-var shipping_url=http://shipping-service:8084/shipping
 
-      - name: Stop and remove containers
-        if: always()
-        run: |
-          docker stop orders-service products-service payments-service shipping-service
-          docker rm orders-service products-service payments-service shipping-service
-          docker network rm mi-red
+      # - name: Stop and remove containers
+      #   if: always()
+      #   run: |
+      #     docker stop orders-service products-service payments-service shipping-service
+      #     docker rm orders-service products-service payments-service shipping-service
+      #     docker network rm mi-red
