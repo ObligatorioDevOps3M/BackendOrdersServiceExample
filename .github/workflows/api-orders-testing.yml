@@ -55,10 +55,10 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -t orders-service:latest ./BackendOrdersServiceExample -f ./BackendOrdersServiceExample/Dockerfile
-          docker build -t products-service:latest ./BackendProductsServiceExample -f ./BackendProductsServiceExample/Dockerfile
-          docker build -t shipping-service:latest ./BackendShippingServiceExample -f ./BackendShippingServiceExample/Dockerfile
           docker build -t payments-service:latest ./BackendPaymentsServiceExample -f ./BackendPaymentsServiceExample/Dockerfile
+          docker build -t shipping-service:latest ./BackendShippingServiceExample -f ./BackendShippingServiceExample/Dockerfile
+          docker build -t products-service:latest ./BackendProductsServiceExample -f ./BackendProductsServiceExample/Dockerfile
+          docker build -t orders-service:latest ./BackendOrdersServiceExample -f ./BackendOrdersServiceExample/Dockerfile
           
       - name: List Docker images
         run: echo "$(docker images)" 
@@ -68,9 +68,9 @@ jobs:
       - name: Run Docker containers
         run: |
           docker run --name payments-service --network mi-red -d -p 8083:8083 payments-service:latest
-          docker run --name shipping-service --network mi-red -d -p 8085:8085 shipping-service:latest
-          docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
-          docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service "http://payments-service:8083" "http://shipping-service:8085" "http://products-service:8080"
+          # docker run --name shipping-service --network mi-red -d -p 8085:8085 shipping-service:latest
+          # docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
+          # docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service "http://payments-service:8083" "http://shipping-service:8085" "http://products-service:8080"
       
       - name: Check orders-service logs
         run: docker logs products-service
