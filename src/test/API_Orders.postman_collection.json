@@ -1,19 +1,60 @@
 {
 	"info": {
-		"_postman_id": "0d2375d5-d191-464f-9a44-f26506fa4e59",
-		"name": "API_Orders",
+		"_postman_id": "3937e9b1-6bc2-4cfd-9f0b-83d80fd1fbd3",
+		"name": "API_Products",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8226521",
-		"_collection_link": "https://proyecto-final-ort-orue-rivero.postman.co/workspace/6795b0df-c2ae-4e20-b455-acd598172048/collection/8226521-0d2375d5-d191-464f-9a44-f26506fa4e59?action=share&source=collection_link&creator=8226521"
+		"_collection_link": "https://proyecto-final-ort-orue-rivero.postman.co/workspace/6795b0df-c2ae-4e20-b455-acd598172048/collection/8226521-3937e9b1-6bc2-4cfd-9f0b-83d80fd1fbd3?action=share&source=collection_link&creator=8226521"
 	},
 	"item": [
 		{
-			"name": "Realizar una compra",
+			"name": "Obtener productos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_GATEWAY_IP}}/products",
+					"host": [
+						"{{API_GATEWAY_IP}}"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener un producto",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"// Test 1: Verify the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Test 2: Verify the response body has the correct product ID\r",
+							"pm.test(\"Verify product ID\", function () {\r",
+							"    pm.expect(pm.response.json().id).to.equal(\"123\");\r",
+							"});\r",
+							"\r",
+							"// Test 3: Verify the response body has the correct product name\r",
+							"pm.test(\"Verify product name\", function () {\r",
+							"    pm.expect(pm.response.json().name).to.equal(\"Producto 123\");\r",
+							"});\r",
+							"\r",
+							"// Test 4: Verify the response body has the correct stock value\r",
+							"pm.test(\"Verify stock value\", function () {\r",
+							"    pm.expect(pm.response.json().stock).to.equal(10);\r",
+							"});\r",
+							"\r",
+							"// Test 5: Verify the response body has the correct description\r",
+							"pm.test(\"Verify product description\", function () {\r",
+							"    pm.expect(pm.response.json().description).to.equal(\"Este es un producto\");\r",
+							"});\r",
 							""
 						],
 						"type": "text/javascript",
@@ -22,24 +63,16 @@
 				}
 			],
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    \"123\", \"321\", \"111\"\n]",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{API_GATEWAY_IP}}/orders",
+					"raw": "{{API_GATEWAY_IP}}/products/123",
 					"host": [
 						"{{API_GATEWAY_IP}}"
 					],
 					"path": [
-						"orders"
+						"products",
+						"123"
 					]
 				}
 			},
@@ -49,7 +82,7 @@
 	"variable": [
 		{
 			"key": "API_GATEWAY_IP",
-			"value": "localhost:8081",
+			"value": "localhost:8080",
 			"type": "default"
 		}
 	]
