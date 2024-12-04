@@ -68,6 +68,9 @@ jobs:
       - name: Wait for services to start
         run: sleep 30
       
+      - name: Check running containers
+        run: docker ps -a
+      
       - name: Run Docker containers
         run: |
           docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
