@@ -104,7 +104,7 @@ jobs:
             --env-var orders_url="http://localhost:${{ env.ORDERS_PORT }}/orders" \
             --env-var products_url="http://localhost:${{ env.PRODUCTS_PORT }}/products" \
             --env-var payments_url="http://payments-service:${{ env.PAYMENTS_PORT }}/payments" \
-            --env-var shipping_url="http://shipping-service:${{ env.SHIPPING_PORT }}/shipping"
+            --env-var shipping_url="http://shipping-service:${{ env.SHIPPING_PORT }}/shipping" \
 
       - name: Stop and remove containers
         if: always()
