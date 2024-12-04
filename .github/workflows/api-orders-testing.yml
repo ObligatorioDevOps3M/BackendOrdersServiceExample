@@ -73,9 +73,9 @@ jobs:
       
       - name: Run Docker containers
         run: |
-          docker run --name products-service --network mi-red -d products-service:latest
-          docker run --name payments-service --network mi-red -d payments-service:latest
-          docker run --name shipping-service --network mi-red -d shipping-service:latest
+          docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
+          docker run --name payments-service --network mi-red -d -p 8083:8083 payments-service:latest  # <--- Mapear el puerto
+          docker run --name shipping-service --network mi-red -d -p 8084:8084 shipping-service:latest  # <--- Mapear el puerto
           docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service:latest
       
       - name: Get ports
@@ -101,11 +101,11 @@ jobs:
         run: |
           newman run ./BackendOrdersServiceExample/src/test/API_Orders.postman_collection.json \
             --reporters cli \
-            --env-var orders_url="http://localhost:${{ env.ORDERS_PORT }}/orders" \
-            --env-var products_url="http://localhost:${{ env.PRODUCTS_PORT }}/products" \
-            --env-var payments_url="http://payments-service:${{ env.PAYMENTS_PORT }}/payments" \
-            --env-var shipping_url="http://shipping-service:${{ env.SHIPPING_PORT }}/shipping" \
-
+            --env-var orders_url=http://localhost:8081/orders \
+            --env-var products_url=http://localhost:8080/products \
+            --env-var payments_url=http://localhost:8083/payments \  # <--- Usar localhost
+            --env-var shipping_url=http://localhost:8084/shipping   # <--- Usar localhost
+      
       - name: Stop and remove containers
         if: always()
         run: |
