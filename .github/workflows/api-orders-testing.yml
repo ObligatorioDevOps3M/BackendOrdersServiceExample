@@ -65,8 +65,8 @@ jobs:
       - name: Create Docker network
         run: docker network create mi-red
       
-      - name: Wait for services to start
-        run: sleep 30
+      # - name: Wait for services to start
+      #   run: sleep 30
       
       - name: Check running containers
         run: docker ps -a
@@ -77,36 +77,38 @@ jobs:
           docker run --name payments-service --network mi-red -d payments-service:latest
           docker run --name shipping-service --network mi-red -d shipping-service:latest
           docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service:latest
+      
       - name: Get ports
         id: get_ports
         run: |
-          echo "::set-output name=products_port::$(docker port products-service 8080/tcp | cut -d':' -f2)"
-          echo "::set-output name=payments_port::$(docker port payments-service 8083/tcp | cut -d':' -f2)"
-          echo "::set-output name=shipping_port::$(docker port shipping-service 8084/tcp | cut -d':' -f2)"
-      # - name: Wait for services to start
-      #   run: sleep 30
+          echo "ORDERS_PORT=8081" >> $GITHUB_ENV #Orders está mapeado al puerto 8081
+          echo "PRODUCTS_PORT=8080" >> $GITHUB_ENV #Products está mapeado al puerto 8080
+          echo "PAYMENTS_PORT=$(docker port payments-service 8083/tcp | cut -d':' -f2)" >> $GITHUB_ENV
+          echo "SHIPPING_PORT=$(docker port shipping-service 8084/tcp | cut -d':' -f2)" >> $GITHUB_ENV
+     
+      - name: Wait for services to start
+        run: sleep 15
       
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
       
-      # - name: Install Newman
-      #   run: npm install -g newman
+      - name: Install Newman
+        run: npm install -g newman
       
-      # - name: Run integration tests with Newman
-      #   run: |
-      #     newman run ./src/test/API_Orders.postman_collection.json
-      #       --reporters cli \ #Para ver la salida en el log del workflow
-      #       --reporters cli \
-              # --env-var orders_url=http://localhost:8081/orders \
-              # --env-var products_url=http://products-service:${{steps.get_ports.outputs.products_port}}/products \
-              # --env-var payments_url=http://payments-service:${{steps.get_ports.outputs.payments_port}}/payments \
-              # --env-var shipping_url=http://shipping-service:${{steps.get_ports.outputs.shipping_port}}/shipping
+      - name: Run integration tests with Newman
+        run: |
+          newman run ./src/test/API_Orders.postman_collection.json
+            --reporters cli \
+            --env-var orders_url="http://localhost:${{ env.ORDERS_PORT }}/orders" \
+            --env-var products_url="http://localhost:${{ env.PRODUCTS_PORT }}/products" \
+            --env-var payments_url=http://payments-service:${{ env.PAYMENTS_PORT }}/payments \ #Payments no está mapeado a tu localhost, por lo que lo accedes por el nombre del servicio y puerto
+            --env-var shipping_url=http://shipping-service:${{ env.SHIPPING_PORT }}/shipping  #Shipping no está mapeado a tu localhost, por lo que lo accedes por el nombre del servicio y puerto
 
-      # - name: Stop and remove containers
-      #   if: always()
-      #   run: |
-      #     docker stop orders-service products-service payments-service shipping-service
-      #     docker rm orders-service products-service payments-service shipping-service
-      #     docker network rm mi-red
+      - name: Stop and remove containers
+        if: always()
+        run: |
+          docker stop orders-service products-service payments-service shipping-service
+          docker rm orders-service products-service payments-service shipping-service
+          docker network rm mi-red
