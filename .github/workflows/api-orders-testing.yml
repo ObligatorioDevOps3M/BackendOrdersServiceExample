@@ -75,30 +75,22 @@ jobs:
       - name: Wait for services to start
         run: sleep 30
       
-      # - name: Run integration tests with Newman
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: '20'
-      # - run: npm install -g newman
-      # - name: Setup API and run tests
-      #   run: |
-
-      - name: Run integration tests with Newman
-        uses: docker://dannydainton/newman:latest
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          collection: <ruta_a_tu_collection_de_postman>
-          environment: |
-            {
-                "name": "Integration Tests",
-                "values": [
-                    { "key": "orders_url", "value": "http://localhost:8081/orders", "enabled": true},
-                    { "key": "products_url", "value": "http://localhost:8080/products", "enabled": true},
-                    { "key": "payments_url", "value": "http://localhost:8083/payments", "enabled": true},
-                    { "key": "shipping_url", "value": "http://localhost:8084/shipping", "enabled": true}
-                ]
-            }
-          reporters: cli
-
+          node-version: '20'
+      
+      - name: Install Newman
+        run: npm install -g newman
+      
+      - name: Run integration tests with Newman
+        run: |
+          newman run <ruta_a_tu_collection_de_postman> \
+            --reporters cli \ #Para ver la salida en el log del workflow
+            --env-var orders_url=http://orders-service:8081/orders \ #Variables de entorno para la collection de Postman
+            --env-var products_url=http://products-service:8080/products \
+            --env-var payments_url=http://payments-service:8083/payments \
+            --env-var shipping_url=http://shipping-service:8084/shipping
 
       - name: Stop and remove containers
         if: always()
