@@ -20,7 +20,7 @@ spec:
         image: REPOSITORY_URI:TAG_PLACEHOLDER
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
   strategy:
     type: RollingUpdate
     rollingUpdate:
