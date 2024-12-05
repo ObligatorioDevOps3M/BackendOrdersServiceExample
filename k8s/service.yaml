@@ -5,14 +5,14 @@ metadata:
   labels:
     app: orders
 spec:
-  
-  selector:
-    app: orders
+  type: LoadBalancer
   ports:
   - protocol: TCP
     port: 8081
     targetPort: 8081
+  selector:
+    app: orders
 
-  - type: LoadBalancer
+ 
 
   
