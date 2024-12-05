@@ -22,7 +22,7 @@
 							"});\r",
 							"// Test for the description attribute value in the response body\r",
 							"pm.test(\"Description attribute is either 'no money.' or 'ok.'\", function () {\r",
-							"    pm.expect(pm.response.json().description).to.be.oneOf(['no money.', 'ok.']);\r",
+							"    pm.expect(pm.response.json().description).to.be.oneOf(['No money.', 'Ok.']);\r",
 							"});// Test for a successful status code\r",
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
