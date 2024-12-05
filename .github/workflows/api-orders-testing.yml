@@ -103,7 +103,7 @@ jobs:
             --reporters cli \
             --env-var orders_url="http://localhost:8081/orders" \
             --env-var products_url="http://product-service:8080/products" \
-            --env-var payments_url="http://payments-service:8082/payments" \
+            --env-var payments_url="http://payments-service:8083/payments" \
             --env-var shipping_url="http://shipping-service:8085/shipping" 
       
       - name: Stop and remove containers
