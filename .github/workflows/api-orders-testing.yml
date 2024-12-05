@@ -73,7 +73,11 @@ jobs:
           #docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service "http://payments-service:8083" "http://shipping-service:8085" "http://products-service:8080"
       
       - name: Check products-service logs
-        run: echo "$(docker logs products-service)"
+        run: |
+          docker exec -it orders-service sh
+          apk add curl
+          curl http://products-service:8080/products/123
+          echo "$(docker logs products-service)"
       
       - name: Inspect Docker network
         run: docker network inspect mi-red

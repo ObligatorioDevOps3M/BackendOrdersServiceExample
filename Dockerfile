@@ -2,10 +2,10 @@
 FROM openjdk:8-jdk-alpine
 
 # Directorio de trabajo en el contenedor
-WORKDIR /app
+#WORKDIR /app
 
 # Copiar el archivo .jar generado al contenedor
-COPY orders-service-example-0.0.1-SNAPSHOT.jar .
+COPY ./target/orders-service-example-0.0.1-SNAPSHOT.jar .
 
 # Exponer el puerto en el que el servicio escucha
 EXPOSE 8081
