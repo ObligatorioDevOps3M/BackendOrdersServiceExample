@@ -74,7 +74,7 @@ jobs:
       
       - name: Check products-service logs
         run: |
-          docker exec -it orders-service sh
+          docker exec -it products-service sh
           apk add curl
           curl http://products-service:8080/products/123
           echo "$(docker logs products-service)"
