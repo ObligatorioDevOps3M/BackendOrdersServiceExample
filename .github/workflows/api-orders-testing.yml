@@ -74,14 +74,6 @@ jobs:
       
       - name: Inspect Docker network
         run: docker network inspect mi-red
-      
-      # - name: Get ports
-      #   id: get_ports
-      #   run: |
-      #     echo "ORDERS_PORT=8081" >> $GITHUB_ENV
-      #     echo "PRODUCTS_PORT=8080" >> $GITHUB_ENV
-      #     echo "PAYMENTS_PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "8083/tcp") 0).HostPort}}' payments-service)" >> $GITHUB_ENV
-      #     echo "SHIPPING_PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "8084/tcp") 0).HostPort}}' shipping-service)" >> $GITHUB_ENV
      
       - name: Wait for services to start
         run: sleep 10

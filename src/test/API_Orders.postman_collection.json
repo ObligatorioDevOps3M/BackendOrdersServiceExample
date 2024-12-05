@@ -14,7 +14,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							""
+							"pm.test(\"Extract values from response\", function () {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.environment.set(\"orderId\", responseJson.orderId);\r",
+							"    pm.environment.set(\"success\", responseJson.success);\r",
+							"    pm.environment.set(\"description\", responseJson.description);\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
