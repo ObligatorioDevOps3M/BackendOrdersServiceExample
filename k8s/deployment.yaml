@@ -4,9 +4,8 @@ metadata:
   name: orders
   labels: 
      app: orders
-
 spec:
-  replicas: 1 
+  replicas: 2
   selector:
     matchLabels:
       app: orders
@@ -21,7 +20,7 @@ spec:
         image: REPOSITORY_URI:TAG_PLACEHOLDER
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
   strategy:
     type: RollingUpdate
     rollingUpdate:
