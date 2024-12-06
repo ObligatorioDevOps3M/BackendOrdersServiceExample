@@ -16,7 +16,3 @@ spec:
     targetPort: 8081
   selector:
     app: orders
-
- 
-
-  
