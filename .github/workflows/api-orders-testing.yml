@@ -17,19 +17,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: ObligatorioDevOps3M/BackendProductsServiceExample
-          ref: develop
+          ref: ${{ github.ref }}
           path: BackendProductsServiceExample
 
       - uses: actions/checkout@v4
         with:
           repository: ObligatorioDevOps3M/BackendPaymentsServiceExample
-          ref: develop
+          ref: ${{ github.ref }}
           path: BackendPaymentsServiceExample
 
       - uses: actions/checkout@v4
         with:
           repository: ObligatorioDevOps3M/BackendShippingServiceExample
-          ref: develop
+          ref: ${{ github.ref }}
           path: BackendShippingServiceExample
 
       - name: Set up JDK 8
