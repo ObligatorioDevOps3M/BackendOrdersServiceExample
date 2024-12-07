@@ -88,12 +88,15 @@ jobs:
         envsubst < k8s/deployment.yaml > k8s/deployment-updated.yaml
 
   # Deploy de la aplicacion en AWS EKS
-  ## Parametrizar:
     - name: Deploy Application to EKS
       run: |
         aws eks --region us-east-1 update-kubeconfig --name cluster_obligatorio_${{ env.ENVIROMENT_NAME }}
         kubectl apply -f k8s/deployment-updated.yaml
         kubectl apply -f k8s/service.yaml
+
+  #Espera la generacion del service
+    - name: Wait for service deploy
+      run: sleep 20
 
   # Obtener y guardar la URL del servicio
     - name: Get service URL
@@ -107,9 +110,7 @@ jobs:
             echo "http://$SERVICE_URL:8081/orders" > service-url-orders.txt
         fi
         
-
  # Guardar el archivo en el repositorio DevOps
-
     - name: Commit and push service-url.txt to DevOps repo
       run: |
         if [ "${{ env.FILE_EXISTS }}" != "true" ]; then
