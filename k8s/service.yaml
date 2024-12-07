@@ -4,15 +4,12 @@ metadata:
   name: orders-service
   labels:
     app: orders
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "clb"  # O usa "clb" para el clásico o "alb" para Ingress
-    service.beta.kubernetes.io/aws-load-balancer-internal: "false"  # Cambia a "true" si quieres un balanceador interno
-    service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet_obligatario_public_1,subnet_obligatario_public_2"  # Subnets de tu VPC
 spec:
-  type: LoadBalancer
-  ports:
-  - protocol: TCP
-    port: 8081
-    targetPort: 8081
   selector:
     app: orders
+
+  ports:
+    - port: 8081
+      targetPort: 8081
+
+  type: LoadBalancer

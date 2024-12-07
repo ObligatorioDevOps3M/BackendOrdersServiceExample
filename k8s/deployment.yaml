@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: orders
-        image: REPOSITORY_URI:TAG_PLACEHOLDER
+        image: ${IMAGE_NAME}
         imagePullPolicy: Always
         ports:
         - containerPort: 8081
