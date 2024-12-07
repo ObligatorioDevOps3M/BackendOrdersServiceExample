@@ -32,13 +32,29 @@ jobs:
   # Build con Maven
     - name: Build and Test with Maven
       run: mvn -B package --file pom.xml
+    
+  # Identificacion de entorno
+    - name: Set Environment
+      run: |
+        BRANCH_NAME=${GITHUB_REF##*/}
+        if [[ "$BRANCH_NAME" == "main" ]]; then
+          CUSTOM_ENV_VAR="main"
+          echo "ENVIROMENT_NAME=production" >> $GITHUB_ENV
+        elif [[ "$BRANCH_NAME" == staging ]]; then
+          CUSTOM_ENV_VAR="staging"
+          echo "ENVIROMENT_NAME=staging" >> $GITHUB_ENV
+        else
+          CUSTOM_ENV_VAR="develop"
+          echo "ENVIROMENT_NAME=develop" >> $GITHUB_ENV
+        fi
 
   # Repo DevOps    
     - name: Checkout external repository
       uses: actions/checkout@v3
       with:
         repository: ObligatorioDevOps3M/DevOps
-        token: ${{ secrets.GITHUB_TOKEN }} # token del workflow
+        #token: ${{ secrets.GITHUB_TOKEN }} # token del workflow
+        token: ${{ secrets.PAT }} # token con acceso a todos los repos
         path: devops-repo-directory # directorio auxiliar para recibir el repo externo
 
   # Credenciales de AWS
@@ -59,34 +75,51 @@ jobs:
     - name: Build and push Docker image
       env:
          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-         IMAGE_TAG: latest
       run: |
-        BRANCH_NAME=${GITHUB_REF##*/}
-          if [[ "$BRANCH_NAME" == "main" ]]; then
-            CUSTOM_ENV_VAR="main"
-            echo "ENVIROMENT_NAME=production" >> $GITHUB_ENV
-          elif [[ "$BRANCH_NAME" == staging ]]; then
-            CUSTOM_ENV_VAR="staging"
-            echo "ENVIROMENT_NAME=staging" >> $GITHUB_ENV
-          else
-            CUSTOM_ENV_VAR="develop"
-            echo "ENVIROMENT_NAME=develop" >> $GITHUB_ENV
-          fi
-        VALUE=$(cat devops-repo-directory/terraform/options-${CUSTOM_ENV_VAR}/ecr_repository_uri.txt)
+        VALUE=$(cat devops-repo-directory/terraform/options-${{ env.ENVIROMENT_NAME }}/ecr_repository_uri_orders.txt)
         REPOSITORY_URI=$VALUE 
+        echo "IMAGE_NAME=$VALUE:${{ env.ENVIROMENT_NAME }}" >> $GITHUB_ENV
+        docker build . --file Dockerfile --tag $VALUE:${{ env.ENVIROMENT_NAME }}
+        docker push $VALUE:${{ env.ENVIROMENT_NAME }}
 
-        docker build . --file Dockerfile --tag $VALUE:$IMAGE_TAG
-        docker push $VALUE:$IMAGE_TAG
+        
+    - name: Update deployment.yaml with image name
+      run: |
+        envsubst < k8s/deployment.yaml > k8s/deployment-updated.yaml
 
-        sed "s|REPOSITORY_URI|$REPOSITORY_URI|g; s|TAG_PLACEHOLDER|$IMAGE_TAG|g" k8s/deployment.yaml
-   
   # Deploy de la aplicacion en AWS EKS
   ## Parametrizar:
-      ## --archivos deployment.yaml y service.yaml en DevOps?
     - name: Deploy Application to EKS
       run: |
-        aws eks --region us-east-1 update-kubeconfig --name cluster_obligatorio_${{env.ENVIROMENT_NAME}}
-        kubectl apply -f k8s/deployment.yaml
+        aws eks --region us-east-1 update-kubeconfig --name cluster_obligatorio_${{ env.ENVIROMENT_NAME }}
+        kubectl apply -f k8s/deployment-updated.yaml
         kubectl apply -f k8s/service.yaml
 
+  # Obtener y guardar la URL del servicio
+    - name: Get service URL
+      id: get-service-url
+      run: |
+        if [ -f "devops-repo-directory/terraform/options-${{ env.ENVIROMENT_NAME }}/service-url-orders.txt" ]; then
+            echo "FILE_EXISTS=true" >> $GITHUB_ENV
+          else
+            SERVICE_URL=$(kubectl get svc -o json | jq -r ".items[] | select(.metadata.name | test(\"orders-service\")) | .status.loadBalancer.ingress[0].hostname")
+            echo "El valor de mi variable es: $SERVICE_URL"
+            echo "http://$SERVICE_URL:8081/orders" > service-url-orders.txt
+        fi
+        
 
+ # Guardar el archivo en el repositorio DevOps
+
+    - name: Commit and push service-url.txt to DevOps repo
+      run: |
+        if [ "${{ env.FILE_EXISTS }}" != "true" ]; then
+          cd devops-repo-directory/terraform/options-${{ env.ENVIROMENT_NAME }}
+          mv ../../../service-url-orders.txt .
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add service-url-orders.txt
+          git commit -m "Update service URL"
+          git push origin main
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
