@@ -1,5 +1,5 @@
 FROM amazoncorretto:8
-WORKDIR /app
+
 COPY ./target/orders-service-example-0.0.1-SNAPSHOT.jar .
 ARG URL_PAYMENTS
 ARG URL_SHIPPING
