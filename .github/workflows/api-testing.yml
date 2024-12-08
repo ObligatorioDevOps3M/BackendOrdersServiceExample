@@ -81,7 +81,7 @@ jobs:
           docker run --name payments-service --network mi-red -d -p 8083:8083 payments-service:latest
           docker run --name shipping-service --network mi-red -d -p 8085:8085 shipping-service:latest
           docker run --name products-service --network mi-red -d -p 8080:8080 products-service:latest
-          docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service:latest
+          docker run --name orders-service --network mi-red -d -p 8081:8081 orders-service:latest "http://payments-service:8083" "http://shipping-service:8085" "http://products-service:8080"
       
       - name: Inspect Docker network
         run: docker network inspect mi-red
