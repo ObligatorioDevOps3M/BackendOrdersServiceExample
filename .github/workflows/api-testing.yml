@@ -3,11 +3,22 @@ on:
     push:
         branches: [ "main" , "staging" , "develop", "feature/*"]
     pull_request:
-        branches: [ "main" , "staging" , "develop", "feature/*"]
+        branches: [ "main" , "staging" , "develop", "feature/*" ]
 jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
+      # Identificación de rama
+      - name: Set branch name
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "CUSTOM_ENV_VAR=main" >> $GITHUB_ENV
+          elif [[ "$BRANCH_NAME" == staging ]]; then
+            echo "CUSTOM_ENV_VAR=staging" >> $GITHUB_ENV
+          else
+            echo "CUSTOM_ENV_VAR=develop" >> $GITHUB_ENV 
+          fi
       - uses: actions/checkout@v4
         with:
           repository: ObligatorioDevOps3M/BackendOrdersServiceExample
@@ -17,19 +28,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: ObligatorioDevOps3M/BackendProductsServiceExample
-          ref: ${{ github.ref }}
+          ref: ${{ env.CUSTOM_ENV_VAR }}
           path: BackendProductsServiceExample
 
       - uses: actions/checkout@v4
         with:
           repository: ObligatorioDevOps3M/BackendPaymentsServiceExample
-          ref: ${{ github.ref }}
+          ref: ${{ env.CUSTOM_ENV_VAR }}
           path: BackendPaymentsServiceExample
 
       - uses: actions/checkout@v4
         with:
           repository: ObligatorioDevOps3M/BackendShippingServiceExample
-          ref: ${{ github.ref }}
+          ref: ${{ env.BRANCH_NAME }}
           path: BackendShippingServiceExample
 
       - name: Set up JDK 8
