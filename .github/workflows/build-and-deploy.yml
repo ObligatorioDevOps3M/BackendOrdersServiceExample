@@ -81,11 +81,12 @@ jobs:
         echo "IMAGE_NAME=$VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }}" >> $GITHUB_ENV
         docker build . \
           --file Dockerfile \
-          --tag $VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }} \
-          --build-arg URL_PAYMENTS=${{ env.URL_PAYMENTS }} \
-          --build-arg URL_SHIPPING=${{ env.URL_SHIPPING }} \
-          --build-arg URL_PRODUCTS=${{ env.URL_PRODUCTS }}
+          --tag $VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }}
         docker push $VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }}
+
+    #--build-arg URL_PAYMENTS=${{ env.URL_PAYMENTS }} \
+    #--build-arg URL_SHIPPING=${{ env.URL_SHIPPING }} \
+    #--build-arg URL_PRODUCTS=${{ env.URL_PRODUCTS }}
 
         
     - name: Update deployment.yaml with image name
