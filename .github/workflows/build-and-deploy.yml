@@ -40,7 +40,7 @@ jobs:
           CUSTOM_ENV_VAR="develop"
           echo "ENVIROMENT_NAME=develop" >> $GITHUB_ENV
         fi
-
+  
   # Repo DevOps    
     - name: Checkout external repository
       uses: actions/checkout@v3
@@ -48,6 +48,16 @@ jobs:
         repository: ObligatorioDevOps3M/DevOps
         token: ${{ secrets.PAT }} # token con acceso a todos los repos
         path: devops-repo-directory # directorio auxiliar para recibir el repo externo
+  
+  # Se obtienen URLs de las otras APIs
+    - name: Set APIs URLs
+      run: |
+        URL_PAYMENTS=$(cat devops-repo-directory/terraform/options-${{ env.ENVIROMENT_NAME }}/service-url-payments.txt)
+        URL_SHIPPING=$(cat devops-repo-directory/terraform/options-${{ env.ENVIROMENT_NAME }}/service-url-shipping.txt)
+        URL_PRODUCTS=$(cat devops-repo-directory/terraform/options-${{ env.ENVIROMENT_NAME }}/service-url-products.txt)
+        echo "URL_PAYMENTS=$URL_PAYMENTS" >> $GITHUB_ENV
+        echo "URL_SHIPPING=$URL_SHIPPING" >> $GITHUB_ENV
+        echo "URL_PRODUCTS=$URL_PRODUCTS" >> $GITHUB_ENV
 
   # Credenciales de AWS
     - name: Configure AWS Credentials
@@ -58,7 +68,7 @@ jobs:
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: us-east-1 # Cambia a tu región
   
-  #Build y push de la imagen de Docker a AWS ECR
+  # Build y push de la imagen de Docker a AWS ECR
     - name: Log in to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
 
@@ -69,7 +79,12 @@ jobs:
         VALUE=$(cat devops-repo-directory/terraform/options-${{ env.ENVIROMENT_NAME }}/ecr_repository_uri_orders.txt)
         REPOSITORY_URI=$VALUE 
         echo "IMAGE_NAME=$VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }}" >> $GITHUB_ENV
-        docker build . --file Dockerfile --tag $VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }}
+        docker build . \
+          --file Dockerfile \
+          --tag $VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }} \
+          --build-arg URL_PAYMENTS=${{ env.URL_PAYMENTS }} \
+          --build-arg URL_SHIPPING=${{ env.URL_SHIPPING }} \
+          --build-arg URL_PRODUCTS=${{ env.URL_PRODUCTS }}
         docker push $VALUE:${{ env.ENVIROMENT_NAME }}_${{ env.DATE }}
 
         
@@ -84,7 +99,7 @@ jobs:
         kubectl apply -f k8s/deployment-updated.yaml
         kubectl apply -f k8s/service.yaml
 
-  # Espera la generacion del service
+  # Espera la generación del service
     - name: Wait for service deploy
       run: sleep 20
 
