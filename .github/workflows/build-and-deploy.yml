@@ -41,6 +41,14 @@ jobs:
           echo "ENVIROMENT_NAME=develop" >> $GITHUB_ENV
         fi
   
+  # Repo DevOps    
+    - name: Checkout external repository
+      uses: actions/checkout@v3
+      with:
+        repository: ObligatorioDevOps3M/DevOps
+        token: ${{ secrets.PAT }} # token con acceso a todos los repos
+        path: devops-repo-directory # directorio auxiliar para recibir el repo externo
+  
   # Se obtienen URLs de las otras APIs
     - name: Set APIs URLs
       run: |
@@ -50,14 +58,6 @@ jobs:
         echo "URL_PAYMENTS=$URL_PAYMENTS" >> $GITHUB_ENV
         echo "URL_SHIPPING=$URL_SHIPPING" >> $GITHUB_ENV
         echo "URL_PRODUCTS=$URL_PRODUCTS" >> $GITHUB_ENV
-
-  # Repo DevOps    
-    - name: Checkout external repository
-      uses: actions/checkout@v3
-      with:
-        repository: ObligatorioDevOps3M/DevOps
-        token: ${{ secrets.PAT }} # token con acceso a todos los repos
-        path: devops-repo-directory # directorio auxiliar para recibir el repo externo
 
   # Credenciales de AWS
     - name: Configure AWS Credentials
