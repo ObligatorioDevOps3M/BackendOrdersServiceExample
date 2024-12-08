@@ -38,6 +38,9 @@ public class OrdersLogic {
 
     public OrderStatus buy(List<String> products) {
         StringBuilder errorBuilder = new StringBuilder();
+        logger.info("Payments: " + PAYMENTS_SERVICE_URL);
+        logger.info("Shipping: " + SHIPPING_SERVICE_URL);
+        logger.info("Products: " + PRODUCTS_SERVICE_URL);
         logger.info("Creating order.");
         logger.info("Checking products.");
 
