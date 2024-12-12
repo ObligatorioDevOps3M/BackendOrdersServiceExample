@@ -40,7 +40,6 @@ jobs:
           CUSTOM_ENV_VAR="develop"
           echo "ENVIROMENT_NAME=develop" >> $GITHUB_ENV
         fi
-  
   # Repo DevOps    
     - name: Checkout external repository
       uses: actions/checkout@v3
@@ -60,6 +59,7 @@ jobs:
         echo "URL_PRODUCTS=$URL_PRODUCTS" >> $GITHUB_ENV
 
   # Credenciales de AWS
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
